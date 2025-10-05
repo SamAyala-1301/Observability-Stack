@@ -1,0 +1,18 @@
+groups:
+  - name: api_alerts
+    rules:
+      - alert: APIHighLatency
+        expr: histogram_quantile(0.95, sum(rate(flask_http_request_duration_seconds_bucket[5m])) by (le)) > 0.2
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API latency is high (>200ms)"
+
+      - alert: APIErrorRateHigh
+        expr: rate(flask_http_request_exceptions_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API errors detected"
